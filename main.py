@@ -66,7 +66,7 @@ def play(episode_href: str, episode_name: str, anime_name: str, anime_href: str)
     console.print(f"\n[bold green]Memutar:[/bold green] [cyan]{episode_name}[/cyan] [dim]({chosen_quality_name})[/dim]\n")
 
     try:
-        subprocess.run([get_player_path(), stream_url])
+        subprocess.run([get_player_path(), "--save-position-on-quit", stream_url])
         console.print("[green]Selesai menonton.[/green]\n")
     except FileNotFoundError:
         console.print("[red]Error: MPV tidak ditemukan![/red]")
