@@ -1,9 +1,9 @@
-# ANISUB CLI
+# anisub
 
-CLI untuk streaming anime subtitle Indonesia di terminal, terinspirasi dari `ani-cli`.
+CLI untuk streaming anime subtitle Indonesia di terminal.
 
 ```
-   _   _  ___ _   _ ___ 
+   _   _  _  ___ _   _ ___ 
   /_\ | \| ||_ _/ __| | | || _ )
  / _ \| .` | | |\__ \ |_| || _ \
 /_/ \_\_|\_||___|___/\___/ |___/
@@ -13,48 +13,51 @@ CLI untuk streaming anime subtitle Indonesia di terminal, terinspirasi dari `ani
 
 ## Requirement
 
-Sebelum install, pastikan sudah punya:
+- Python 3.8+
+- MPV Player
 
-- **Python 3.8+**
-- **MPV Player**
-  - Windows: `winget install mpv.mpv`
-  - Linux: `sudo apt install mpv`
-  - Mac: `brew install mpv`
-- **yt-dlp** (opsional, membantu MPV di beberapa format)
-  - `winget install yt-dlp` / `pip install yt-dlp`
+| OS | Install MPV |
+|----|------------|
+| Windows | `winget install mpv.mpv` |
+| Linux (Arch) | `sudo pacman -S mpv` |
+| Linux (Ubuntu) | `sudo apt install mpv` |
+| Mac | `brew install mpv` |
 
 ---
 
 ## Instalasi
 
-### Via pipx (direkomendasikan untuk Linux/Mac)
+### Windows
+
+```bash
+pip install git+https://github.com/FAmanca/anisub.git
+```
+
+Jalankan:
+```bash
+anisub
+```
+
+### Linux / Mac
 
 ```bash
 pipx install git+https://github.com/FAmanca/anisub.git
 ```
 
-> Linux (Arch): `sudo pacman -S python-pipx`
-> Linux (Ubuntu/Debian): `sudo apt install pipx`
-> Mac: `brew install pipx`
+Install pipx jika belum ada:
 
-### Via pip (Windows / virtualenv)
+| OS | Command |
+|----|---------|
+| Arch | `sudo pacman -S python-pipx` |
+| Ubuntu/Debian | `sudo apt install pipx` |
+| Mac | `brew install pipx` |
 
-**Dari GitHub langsung:**
-```bash
-pip install git+https://github.com/FAmanca/anisub.git
-```
-
-**Dari folder lokal:**
-```bash
-pip install .
-```
-
-Setelah install, langsung jalankan dari terminal mana saja:
+Jalankan:
 ```bash
 anisub
 ```
 
-### Tanpa install (jalankan langsung)
+### Tanpa install (jalankan dari source)
 
 ```bash
 git clone https://github.com/FAmanca/anisub.git
@@ -68,33 +71,19 @@ python main.py
 ## Fitur
 
 - Cari dan tonton anime Sub Indo langsung dari terminal
-- Riwayat tontonan — lanjut dari episode terakhir dengan mudah
+- Riwayat tontonan — lanjut dari episode terakhir
 - Auto lanjut ke episode berikutnya setelah selesai menonton
-- Simpan preferensi kualitas video (360p / 480p / 720p) sebagai default
-- Cache hasil pencarian per sesi (hemat request)
-- Rate limit otomatis 20 request/menit agar tidak diblokir server
 - Navigasi kembali di setiap tahap
+- Cache hasil pencarian per sesi
+- Rate limit otomatis (20 req/menit)
 - Cross-platform: Windows, Linux, Mac
 
 ---
 
-## Data User
+## Data
 
-Semua data disimpan di folder `~/.anisub/`:
+Semua data disimpan di `~/.anisub/`:
 
 | File | Isi |
 |------|-----|
-| `~/.anisub/history.json` | Riwayat tontonan (maks 30 entri) |
-| `~/.anisub/user_config.json` | Preferensi kualitas video |
-
----
-
-## Struktur Project
-
-| File | Fungsi |
-|------|--------|
-| `main.py` | Entry point & logika alur utama |
-| `api.py` | Request ke API anime (+ rate limiter & cache) |
-| `config.py` | Konfigurasi URL base API |
-| `history.py` | Manajemen riwayat tontonan |
-| `user_config.py` | Manajemen preferensi user |
+| `history.json` | Riwayat tontonan (maks 30 entri) |
