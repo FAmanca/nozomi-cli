@@ -1,5 +1,5 @@
 from InquirerPy import prompt
-from api import search, get_episode, get_qualities, resolve_stream
+from api import search, get_episode, get_qualities, resolve_stream, get_ongoing
 from history import load_history, save_history, clear_history
 from rich.console import Console
 from rich.panel import Panel
@@ -208,20 +208,102 @@ def flow_history():
         watch_session(entry["anime_name"], entry["anime_href"], eps_list)
 
 
+def resume_last_watch():
+    history = load_history()
+    if not history: return
+    last = history[0]
+
+    with console.status("[cyan]Menyiapkan kelanjutan...[/cyan]"):
+        eps_list = get_episode(last["anime_href"])
+    
+    if not eps_list:
+        console.print("[red]Gagal memuat episode.[/red]\n")
+        return
+    
+    last_idx = next((i for i, e in enumerate(eps_list) if e["value"] == last["episode_href"]), None)
+    
+    if last_idx is not None and last_idx + 1 < len(eps_list):
+        next_ep = eps_list[last_idx + 1]
+        console.print(f"[cyan]Melanjutkan:[/cyan] {last['anime_name']}")
+        result = play(next_ep["value"], next_ep["name"], last["anime_name"], last["anime_href"])
+        
+        # Jika user menonton sampai selesai dan masih ada episode selanjutnya, lempar ke watch_session
+        if result == "ask_next":
+             watch_session(last["anime_name"], last["anime_href"], eps_list)
+    else:
+        console.print(f"[yellow]Kamu sudah menonton episode terbaru dari {last['anime_name']}![/yellow]\n")
+        watch_session(last["anime_name"], last["anime_href"], eps_list)
+
+def flow_ongoing():
+    page = 1
+    while True:
+        with console.status(f"[cyan]Mengambil Anime Terbaru (Halaman {page})...[/cyan]"):
+            ongoing_data = get_ongoing(page)
+        
+        anime_list = ongoing_data.get("animeList", [])
+        pagination = ongoing_data.get("pagination", {})
+
+        if not anime_list:
+            console.print("[red]Gagal memuat anime ongoing.[/red]\n")
+            return
+        
+        choices = [{"name": "[ Kembali ke Menu Utama ]", "value": "BACK"}]
+        if pagination.get("hasPrevPage"):
+            choices.append({"name": "[ << Halaman Sebelumnya ]", "value": "PREV"})
+        
+        for a in anime_list:
+            choices.append(a)
+        
+        if pagination.get("hasNextPage"):
+            choices.append({"name": "[ Halaman Selanjutnya >> ]", "value": "NEXT"})
+        
+        res = prompt([{"type": "list", "message": f"Anime Terbaru (Hal {page}):", "name": "choice", "choices": choices}])
+        choice = res["choice"]
+
+        if choice == "BACK":
+            return
+        elif choice == "PREV":
+            page -= 1
+        elif choice == "NEXT":
+            page += 1
+        else:
+            with console.status("[cyan]Mengambil daftar episode...[/cyan]"):
+                eps_list = get_episode(choice["href"])
+            if not eps_list:
+                console.print("[red]Daftar episode gagal dimuat.[/red]\n")
+                continue
+            watch_session(choice["title"], choice["href"], eps_list)
+
 def start():
     show_banner()
 
     while True:
         history = load_history()
-
-        main_menu = [{"name": "Cari Anime", "value": "search"}]
+        
+        main_menu = []
+        
         if history:
-            main_menu.append({"name": f"Riwayat Tontonan  ({len(history)} entri)", "value": "history"})
-        main_menu.append({"name": "Keluar", "value": "exit"})
+            last = history[0]
+            main_menu.append({
+                "name": f"▶ Lanjutkan: {last['anime_name']} - {last['episode_name']}",
+                "value": "resume"
+            })
+
+        main_menu.append({"name": "🌟 Anime Terbaru (Ongoing)", "value": "ongoing"})
+        main_menu.append({"name": "🔍 Cari Anime", "value": "search"})
+        
+        if history:
+            main_menu.append({"name": f"📜 Riwayat Tontonan ({len(history)} entri)", "value": "history"})
+        
+        main_menu.append({"name": "🚪 Keluar", "value": "exit"})
 
         res = prompt([{"type": "list", "message": "Menu Utama:", "name": "menu", "choices": main_menu}])
 
-        if res["menu"] == "search":
+        if res["menu"] == "resume":
+            resume_last_watch()
+        elif res["menu"] == "ongoing":
+            flow_ongoing()
+        elif res["menu"] == "search":
             flow_search()
         elif res["menu"] == "history":
             flow_history()

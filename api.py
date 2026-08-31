@@ -52,6 +52,32 @@ def search(title: str) -> list:
     except Exception:
         return []
 
+@_memo
+def get_ongoing(page: int = 1) -> dict:
+    try:
+        res = _get(f"{BASE_URL}/anime/ongoing-anime?page={page}")
+        data = res.json()
+        if not data.get("ok"):
+            return {}
+        
+        anime_list = []
+        for a in data.get("data", {}).get("animeList", []):
+            title = a.get("title", "Unknown")
+            ep = a.get("episodes", "?")
+            release = a.get("latestReleaseDate", "")
+            display_name = f"{title} (Ep {ep}) - {release}"
+            anime_list.append({
+                "name": display_name, 
+                "value": {"href": a["href"], "title": title}
+            })
+            
+        return {
+            "animeList": anime_list,
+            "pagination": data.get("pagination", {})
+        }
+    except Exception:
+        return {}
+
 
 @_memo
 def get_episode(href: str) -> list:
