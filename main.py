@@ -285,17 +285,17 @@ def start():
         if history:
             last = history[0]
             main_menu.append({
-                "name": f"▶ Lanjutkan: {last['anime_name']} - {last['episode_name']}",
+                "name": f"Lanjutkan: {last['anime_name']} - {last['episode_name']}",
                 "value": "resume"
             })
 
-        main_menu.append({"name": "🌟 Anime Terbaru (Ongoing)", "value": "ongoing"})
-        main_menu.append({"name": "🔍 Cari Anime", "value": "search"})
+        main_menu.append({"name": "Anime Terbaru (Ongoing)", "value": "ongoing"})
+        main_menu.append({"name": "Cari Anime", "value": "search"})
         
         if history:
-            main_menu.append({"name": f"📜 Riwayat Tontonan ({len(history)} entri)", "value": "history"})
+            main_menu.append({"name": f"Riwayat Tontonan ({len(history)} entri)", "value": "history"})
         
-        main_menu.append({"name": "🚪 Keluar", "value": "exit"})
+        main_menu.append({"name": "Keluar", "value": "exit"})
 
         res = prompt([{"type": "list", "message": "Menu Utama:", "name": "menu", "choices": main_menu}])
 
