@@ -11,10 +11,11 @@ requires-python = ">=3.8"
 dependencies = [
     "InquirerPy>=0.3.4",
     "requests>=2.28.0",
+    "rich>=13.0.0",
 ]
 
 [project.scripts]
 anisub = "main:start"
 
 [tool.setuptools]
-py-modules = ["main", "api", "config", "history", "user_config"]
+py-modules = ["main", "api", "config", "history"]

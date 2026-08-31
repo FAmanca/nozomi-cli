@@ -1,8 +1,13 @@
 from InquirerPy import prompt
 from api import search, get_episode, get_qualities, resolve_stream
 from history import load_history, save_history, clear_history
+from rich.console import Console
+from rich.panel import Panel
+from rich.text import Text
 import subprocess
 import sys
+
+console = Console()
 
 BANNER = r"""
    _   _  _  ___ _   _ ___ 
@@ -11,13 +16,24 @@ BANNER = r"""
 /_/ \_\_|\_||___|___/\___/ |___/
 """
 
+def show_banner():
+    console.print(Panel(
+        Text(BANNER.strip(), style="bold cyan", justify="center"),
+        subtitle="[dim]streaming anime sub indo[/dim]",
+        border_style="cyan",
+        padding=(0, 2),
+    ))
+    console.print()
+
 def get_player_path() -> str:
     return "mpv"
 
 def play(episode_href: str, episode_name: str, anime_name: str, anime_href: str) -> str:
-    quality_choices = get_qualities(episode_href)
+    with console.status("[cyan]Mengambil kualitas video...[/cyan]"):
+        quality_choices = get_qualities(episode_href)
+
     if not quality_choices:
-        print("Video tidak tersedia untuk episode ini!")
+        console.print("[red]Video tidak tersedia untuk episode ini.[/red]")
         return "back"
 
     res_q = prompt([{
@@ -38,10 +54,10 @@ def play(episode_href: str, episode_name: str, anime_name: str, anime_href: str)
     )
     if not selected_url:
         selected_url = urls[0]["url"]
-        print(f"PDrain tidak tersedia, mencoba server lain ({urls[0]['title']})...")
+        console.print(f"[yellow]PDrain tidak tersedia, mencoba {urls[0]['title']}...[/yellow]")
 
-    print("Menyiapkan stream...")
-    stream_url = resolve_stream(selected_url)
+    with console.status("[cyan]Menyiapkan stream...[/cyan]"):
+        stream_url = resolve_stream(selected_url)
 
     save_history({
         "anime_name": anime_name,
@@ -51,13 +67,14 @@ def play(episode_href: str, episode_name: str, anime_name: str, anime_href: str)
         "quality": chosen_quality_name,
     })
 
+    console.print(f"\n[bold green]Memutar:[/bold green] [cyan]{episode_name}[/cyan] [dim]({chosen_quality_name})[/dim]\n")
+
     try:
-        print("Memulai MPV Player...")
         subprocess.run([get_player_path(), stream_url])
-        print("Selesai menonton.\n")
+        console.print("[green]Selesai menonton.[/green]\n")
     except FileNotFoundError:
-        print("\nError: MPV tidak ditemukan!")
-        print("Install MPV (winget install mpv.mpv) atau taruh mpv.exe di folder ini.\n")
+        console.print("[red]Error: MPV tidak ditemukan![/red]")
+        console.print("[dim]Install MPV: winget install mpv.mpv  /  sudo apt install mpv  /  brew install mpv[/dim]\n")
         return "done"
 
     return "ask_next"
@@ -105,12 +122,14 @@ def flow_search():
         if not name:
             return
 
-        print("Mencari anime...")
-        anime_choices = search(name)
+        with console.status(f"[cyan]Mencari '{name}'...[/cyan]"):
+            anime_choices = search(name)
+
         if not anime_choices:
-            print("Anime tidak ditemukan atau terjadi kesalahan jaringan.\n")
+            console.print("[red]Anime tidak ditemukan atau terjadi kesalahan jaringan.[/red]\n")
             continue
 
+        console.print(f"[dim]Ditemukan {len(anime_choices)} hasil.[/dim]")
         anime_choices_prompt = [{"name": "[ Kembali ke Pencarian ]", "value": "BACK"}] + anime_choices
 
         while True:
@@ -118,20 +137,22 @@ def flow_search():
             if res_anime["anime"] == "BACK":
                 break
 
-            print("Mengambil daftar episode...")
-            eps_list = get_episode(res_anime["anime"])
+            with console.status("[cyan]Mengambil daftar episode...[/cyan]"):
+                eps_list = get_episode(res_anime["anime"])
+
             if not eps_list:
-                print("Daftar episode gagal dimuat atau kosong!\n")
+                console.print("[red]Daftar episode gagal dimuat.[/red]\n")
                 continue
 
             anime_name = next((a["name"] for a in anime_choices if a["value"] == res_anime["anime"]), "")
+            console.print(f"[dim]{len(eps_list)} episode tersedia.[/dim]")
             watch_session(anime_name, res_anime["anime"], eps_list)
 
 
 def flow_history():
     history = load_history()
     if not history:
-        print("Riwayat tontonan kosong.\n")
+        console.print("[yellow]Riwayat tontonan kosong.[/yellow]\n")
         return
 
     history_choices = [{"name": "[ Kembali ]", "value": "BACK"}] + [
@@ -149,13 +170,14 @@ def flow_history():
         res_confirm = prompt([{"type": "confirm", "message": "Yakin ingin menghapus semua riwayat?", "name": "ok", "default": False}])
         if res_confirm["ok"]:
             clear_history()
-            print("Riwayat dihapus.\n")
+            console.print("[green]Riwayat dihapus.[/green]\n")
         return
 
-    print("Mengambil daftar episode...")
-    eps_list = get_episode(entry["anime_href"])
+    with console.status("[cyan]Mengambil daftar episode...[/cyan]"):
+        eps_list = get_episode(entry["anime_href"])
+
     if not eps_list:
-        print("Gagal memuat episode.\n")
+        console.print("[red]Gagal memuat episode.[/red]\n")
         return
 
     last_idx = next((i for i, e in enumerate(eps_list) if e["value"] == entry["episode_href"]), None)
@@ -191,7 +213,7 @@ def flow_history():
 
 
 def start():
-    print(BANNER)
+    show_banner()
 
     while True:
         history = load_history()
@@ -208,12 +230,12 @@ def start():
         elif res["menu"] == "history":
             flow_history()
         elif res["menu"] == "exit":
-            print("Sampai jumpa!")
+            console.print("\n[cyan]Sampai jumpa![/cyan]\n")
             break
 
 if __name__ == "__main__":
     try:
         start()
     except KeyboardInterrupt:
-        print("\nKeluar dari program...")
+        console.print("\n[dim]Keluar dari program...[/dim]")
         sys.exit(0)
