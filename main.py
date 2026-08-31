@@ -9,23 +9,16 @@ import sys
 
 console = Console()
 
-BANNER = r"""
-   ░███    ░███    ░██ ░██████  ░██████   ░██     ░██ ░████████   
-  ░██░██   ░████   ░██   ░██   ░██   ░██  ░██     ░██ ░██    ░██  
- ░██  ░██  ░██░██  ░██   ░██  ░██         ░██     ░██ ░██    ░██  
-░█████████ ░██ ░██ ░██   ░██   ░████████  ░██     ░██ ░████████   
-░██    ░██ ░██  ░██░██   ░██          ░██ ░██     ░██ ░██     ░██ 
-░██    ░██ ░██   ░████   ░██   ░██   ░██   ░██   ░██  ░██     ░██ 
-░██    ░██ ░██    ░███ ░██████  ░██████     ░██████   ░█████████  
-"""
-
 def show_banner():
-    console.print(Panel(
-        Text(BANNER.strip(), style="bold cyan", justify="center"),
-        subtitle="[dim]streaming anime sub indo[/dim]",
-        border_style="cyan",
-        padding=(0, 2),
-    ))
+    console.print(
+        Panel(
+            "[bold cyan]NOZOMI CLI[/bold cyan]",
+            subtitle="[dim]streaming anime sub indo[/dim]",
+            border_style="cyan",
+            expand=False,
+            padding=(1, 4)
+        )
+    )
     console.print()
 
 def get_player_path() -> str:

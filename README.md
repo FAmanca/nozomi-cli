@@ -1,13 +1,6 @@
-# anisub
+# nozomi-cli
 
 CLI untuk streaming anime subtitle Indonesia di terminal.
-
-```
-   _   _  _  ___ _   _ ___ 
-  /_\ | \| ||_ _/ __| | | || _ )
- / _ \| .` | | |\__ \ |_| || _ \
-/_/ \_\_|\_||___|___/\___/ |___/
-```
 
 ---
 
@@ -29,19 +22,25 @@ CLI untuk streaming anime subtitle Indonesia di terminal.
 
 ### Windows
 
+Menggunakan `uv` (Direkomendasikan):
 ```bash
-pip install git+https://github.com/FAmanca/anisub.git
+uv tool install git+https://github.com/FAmanca/nozomi-cli.git
+```
+
+Atau menggunakan `pip`:
+```bash
+pip install git+https://github.com/FAmanca/nozomi-cli.git
 ```
 
 Jalankan:
 ```bash
-anisub
+nozomi
 ```
 
 ### Linux / Mac
 
 ```bash
-pipx install git+https://github.com/FAmanca/anisub.git
+pipx install git+https://github.com/FAmanca/nozomi-cli.git
 ```
 
 Install pipx jika belum ada:
@@ -54,14 +53,14 @@ Install pipx jika belum ada:
 
 Jalankan:
 ```bash
-anisub
+nozomi
 ```
 
 ### Tanpa install (jalankan dari source)
 
 ```bash
-git clone https://github.com/FAmanca/anisub.git
-cd anisub
+git clone https://github.com/FAmanca/nozomi-cli.git
+cd nozomi-cli
 pip install -r requirements.txt
 python main.py
 ```
@@ -82,7 +81,7 @@ python main.py
 
 ## Data
 
-Semua data disimpan di `~/.anisub/`:
+Semua data disimpan di `~/.nozomi/`:
 
 | File | Isi |
 |------|-----|

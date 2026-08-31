@@ -1,7 +1,7 @@
 import json
 import os
 
-DATA_DIR = os.path.join(os.path.expanduser("~"), ".anisub")
+DATA_DIR = os.path.join(os.path.expanduser("~"), ".nozomi")
 os.makedirs(DATA_DIR, exist_ok=True)
 
 HISTORY_FILE = os.path.join(DATA_DIR, "history.json")

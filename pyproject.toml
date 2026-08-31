@@ -3,7 +3,7 @@ requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "anisub"
+name = "nozomi-cli"
 version = "0.1.0"
 description = "CLI untuk streaming anime subtitle Indonesia ala ani-cli"
 readme = "README.md"
@@ -15,7 +15,7 @@ dependencies = [
 ]
 
 [project.scripts]
-anisub = "main:start"
+nozomi = "main:start"
 
 [tool.setuptools]
 py-modules = ["main", "api", "config", "history"]
