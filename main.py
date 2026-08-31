@@ -211,28 +211,46 @@ def flow_history():
 def resume_last_watch():
     history = load_history()
     if not history: return
-    last = history[0]
+    entry = history[0]
 
-    with console.status("[cyan]Menyiapkan kelanjutan...[/cyan]"):
-        eps_list = get_episode(last["anime_href"])
+    with console.status("[cyan]Mengambil daftar episode...[/cyan]"):
+        eps_list = get_episode(entry["anime_href"])
     
     if not eps_list:
         console.print("[red]Gagal memuat episode.[/red]\n")
         return
     
-    last_idx = next((i for i, e in enumerate(eps_list) if e["value"] == last["episode_href"]), None)
+    last_idx = next((i for i, e in enumerate(eps_list) if e["value"] == entry["episode_href"]), None)
     
+    options = [{"name": "[ Kembali ]", "value": "BACK"}]
     if last_idx is not None and last_idx + 1 < len(eps_list):
         next_ep = eps_list[last_idx + 1]
-        console.print(f"[cyan]Melanjutkan:[/cyan] {last['anime_name']}")
-        result = play(next_ep["value"], next_ep["name"], last["anime_name"], last["anime_href"])
-        
-        # Jika user menonton sampai selesai dan masih ada episode selanjutnya, lempar ke watch_session
-        if result == "ask_next":
-             watch_session(last["anime_name"], last["anime_href"], eps_list)
-    else:
-        console.print(f"[yellow]Kamu sudah menonton episode terbaru dari {last['anime_name']}![/yellow]\n")
-        watch_session(last["anime_name"], last["anime_href"], eps_list)
+        options.append({"name": f"Lanjutkan -> {next_ep['name']}", "value": "NEXT"})
+    
+    options.append({"name": f"Ulangi -> {entry['episode_name']}", "value": "REPLAY"})
+    options.append({"name": "Pilih episode lain", "value": "BROWSE"})
+
+    res_action = prompt([{"type": "list", "message": f"Terakhir ditonton: {entry['episode_name']}", "name": "action", "choices": options}])
+    action = res_action["action"]
+
+    if action == "BACK":
+        return
+    elif action == "NEXT":
+        current_idx = last_idx + 1
+        while current_idx is not None and current_idx < len(eps_list):
+            ep = eps_list[current_idx]
+            result = play(ep["value"], ep["name"], entry["anime_name"], entry["anime_href"])
+            if result == "ask_next" and current_idx + 1 < len(eps_list):
+                next_ep = eps_list[current_idx + 1]
+                res_next = prompt([{"type": "confirm", "message": f"Lanjut ke '{next_ep['name']}'?", "name": "next", "default": True}])
+                if res_next["next"]:
+                    current_idx += 1
+                    continue
+            break
+    elif action == "REPLAY":
+        play(entry["episode_href"], entry["episode_name"], entry["anime_name"], entry["anime_href"])
+    elif action == "BROWSE":
+        watch_session(entry["anime_name"], entry["anime_href"], eps_list)
 
 def flow_ongoing():
     page = 1
