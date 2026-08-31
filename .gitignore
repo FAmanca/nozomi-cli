@@ -1,0 +1,23 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Scratch / temp files
+scratch.py
+dump.html
+
+
+# Virtual environments
+.venv
+
+# Runtime files (dibuat otomatis saat program berjalan)
+history.json
+user_config.json
+
+# OS files
+.DS_Store
+Thumbs.db
