@@ -27,11 +27,21 @@ Sebelum install, pastikan sudah punya:
 
 ## Instalasi
 
-### Via pip (direkomendasikan)
+### Via pipx (direkomendasikan untuk Linux/Mac)
+
+```bash
+pipx install git+https://github.com/FAmanca/anisub.git
+```
+
+> Linux (Arch): `sudo pacman -S python-pipx`
+> Linux (Ubuntu/Debian): `sudo apt install pipx`
+> Mac: `brew install pipx`
+
+### Via pip (Windows / virtualenv)
 
 **Dari GitHub langsung:**
 ```bash
-pip install git+https://github.com/USERNAME/anisub.git
+pip install git+https://github.com/FAmanca/anisub.git
 ```
 
 **Dari folder lokal:**
@@ -47,7 +57,7 @@ anisub
 ### Tanpa install (jalankan langsung)
 
 ```bash
-git clone https://github.com/USERNAME/anisub.git
+git clone https://github.com/FAmanca/anisub.git
 cd anisub
 pip install -r requirements.txt
 python main.py
