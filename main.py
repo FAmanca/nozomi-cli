@@ -1,7 +1,6 @@
 from InquirerPy import prompt
 from api import search, get_episode, get_qualities, resolve_stream
 from history import load_history, save_history, clear_history
-from user_config import load_config, save_config
 import subprocess
 import sys
 
@@ -16,42 +15,22 @@ def get_player_path() -> str:
     return "mpv"
 
 def play(episode_href: str, episode_name: str, anime_name: str, anime_href: str) -> str:
-    config = load_config()
-
     quality_choices = get_qualities(episode_href)
     if not quality_choices:
         print("Video tidak tersedia untuk episode ini!")
         return "back"
 
-    quality_prompt = {
+    res_q = prompt([{
         "type": "list",
         "message": "Pilih Kualitas:",
         "name": "quality",
         "choices": [{"name": "[ Kembali ke Pilih Episode ]", "value": "BACK"}] + quality_choices,
-    }
-
-    default_q_name = config.get("default_quality")
-    if default_q_name:
-        default_match = next((q["value"] for q in quality_choices if q["name"] == default_q_name), None)
-        if default_match:
-            quality_prompt["default"] = default_match
-
-    res_q = prompt([quality_prompt])
+    }])
     if res_q["quality"] == "BACK":
         return "back"
 
     urls = res_q["quality"]
     chosen_quality_name = next((q["name"] for q in quality_choices if q["value"] == urls), "")
-
-    if chosen_quality_name and chosen_quality_name != config.get("default_quality"):
-        res_save = prompt([{
-            "type": "confirm",
-            "message": f"Simpan '{chosen_quality_name}' sebagai kualitas default?",
-            "name": "save",
-            "default": False,
-        }])
-        if res_save["save"]:
-            save_config("default_quality", chosen_quality_name)
 
     selected_url = next(
         (u["url"] for u in urls if "pdrain" in u["title"].lower() or "pixeldrain" in u["title"].lower()),
