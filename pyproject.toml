@@ -15,7 +15,7 @@ dependencies = [
 ]
 
 [project.scripts]
-nozomi = "main:start"
+nozomi-cli = "main:start"
 
 [tool.setuptools]
 py-modules = ["main", "api", "config", "history"]

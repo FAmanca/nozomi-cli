@@ -34,7 +34,7 @@ pip install git+https://github.com/FAmanca/nozomi-cli.git
 
 Jalankan:
 ```bash
-nozomi
+nozomi-cli
 ```
 
 ### Linux / Mac
@@ -53,7 +53,7 @@ Install pipx jika belum ada:
 
 Jalankan:
 ```bash
-nozomi
+nozomi-cli
 ```
 
 ### Tanpa install (jalankan dari source)
