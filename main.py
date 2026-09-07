@@ -54,6 +54,11 @@ def play(episode_href: str, episode_name: str, anime_name: str, anime_href: str)
 
     with console.status("[cyan]Menyiapkan stream...[/cyan]"):
         stream_url = resolve_stream(selected_url)
+        
+    if not stream_url:
+        console.print("\n[red]Gagal memutar video (Link dari server sumber mungkin sudah mati atau dihapus).[/red]")
+        console.print("[yellow]Pesan ini muncul karena link mentahnya dialihkan kembali ke web asal.[/yellow]\n")
+        return "done"
 
     save_history({
         "anime_name": anime_name,

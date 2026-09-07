@@ -109,10 +109,19 @@ def get_qualities(href: str) -> list:
 
 def resolve_stream(url: str) -> str:
     try:
-        res = _get(url, allow_redirects=False)
+        res = requests.get(url, allow_redirects=False, timeout=10)
         redirect_url = res.headers.get("Location")
-        if redirect_url and "pixeldrain.com/u/" in redirect_url:
+        
+        if not redirect_url:
+            return url
+            
+        if "pixeldrain.com/u/" in redirect_url:
             return redirect_url.replace("/u/", "/api/file/")
-        return redirect_url if redirect_url else url
+            
+        # Jika dialihkan ke halaman utama otakudesu, berarti link file mati/expired
+        if "otakudesu" in redirect_url.lower():
+            return ""
+            
+        return redirect_url
     except Exception:
-        return url
+        return ""
